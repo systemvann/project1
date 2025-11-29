@@ -9,29 +9,15 @@ import {
   ListItemText,
   Divider,
   Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Select,
-  MenuItem,
   CircularProgress,
-  TextField,
   Button,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Chip,
 } from '@mui/material';
 import { getAll, update, add, remove } from '../../services/firestore';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
+import OverviewTab from './OverviewTab';
+import ProductsTab from './ProductsTab';
+import PickingTab from './PickingTab';
+import PermissionsTab from './PermissionsTab';
 
 type AdminTab = 'overview' | 'products' | 'permissions' | 'picking';
 
@@ -407,229 +393,54 @@ const AdminDashboard = () => {
   const renderContent = (): React.ReactElement => {
     switch (tab) {
       case 'overview':
-        return (
-          <>
-            <Typography variant="h4" gutterBottom>
-              แดชบอร์ดรวม (Admin)
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              ภาพรวมระบบ เช่น จำนวนผู้ใช้ สินค้า และออเดอร์ คุณสามารถเพิ่มกราฟ/สถิติต่าง ๆ ได้ภายหลัง
-            </Typography>
-          </>
-        );
+        return <OverviewTab />;
 
       case 'picking':
-        if (loadingPickingRecords) {
-          return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
-              <CircularProgress />
-            </Box>
-          );
-        }
         return (
-          <>
-            <Typography variant="h4" gutterBottom>
-              การเบิกสินค้า
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-              รายการที่สตาฟเบิกสินค้าแล้ว รอดำเนินการจัดส่ง
-            </Typography>
-            {pickingRecords.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">
-                ยังไม่มีรายการเบิกสินค้า
-              </Typography>
-            ) : (
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>ผู้เบิก</TableCell>
-                      <TableCell>ลูกค้า</TableCell>
-                      <TableCell>ที่อยู่จัดส่ง</TableCell>
-                      <TableCell>วันที่เบิก</TableCell>
-                      <TableCell>ยอดรวม</TableCell>
-                      <TableCell>เลขพัสดุ</TableCell>
-                      <TableCell>สถานะ</TableCell>
-                      <TableCell>จัดการ</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {pickingRecords.map((record) => (
-                      <TableRow key={record.id}>
-                        <TableCell>{record.staffName}</TableCell>
-                        <TableCell>{record.customerInfo.fullName}</TableCell>
-                        <TableCell sx={{ maxWidth: 200, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {record.customerInfo.address}
-                        </TableCell>
-                        <TableCell>
-                          {record.pickedAt?.toDate?.().toLocaleDateString('th-TH') ||
-                            record.pickedAt?.toLocaleDateString?.('th-TH') ||
-                            '-'}
-                        </TableCell>
-                        <TableCell>
-                          {record.total.toLocaleString('th-TH', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </TableCell>
-                        <TableCell>
-                          {record.trackingNumber || (
-                            <Typography variant="body2" color="text.secondary">
-                              ยังไม่มี
-                            </Typography>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Chip
-                            label={record.status}
-                            color={
-                              record.status === 'จัดส่งแล้ว'
-                                ? 'success'
-                                : record.status === 'กำลังจัดส่ง'
-                                ? 'warning'
-                                : 'default'
-                            }
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="outlined" size="small" onClick={() => handleEditPicking(record)}>
-                            จัดการขนส่ง
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
+          <PickingTab
+            pickingRecords={pickingRecords}
+            loadingPickingRecords={loadingPickingRecords}
+            editingPicking={editingPicking}
+            pickingForm={pickingForm}
+            onEditPicking={handleEditPicking}
+            onPickingFormChange={handlePickingFormChange}
+            onSavePicking={handleSavePicking}
+            onCancelEdit={() => setEditingPicking(null)}
+          />
+        );
+
       case 'products':
         return (
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>ชื่อสินค้า</TableCell>
-                  <TableCell>คำอธิบาย</TableCell>
-                  <TableCell align="right">ราคา</TableCell>
-                  <TableCell align="right">จำนวน</TableCell>
-                  <TableCell>รูปภาพ</TableCell>
-                  <TableCell align="right">จัดการ</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.id} hover>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell>{product.description}</TableCell>
-                    <TableCell align="right">{product.price.toFixed(2)}</TableCell>
-                    <TableCell align="right">{product.quantity}</TableCell>
-                    <TableCell>
-                      {product.imageUrl ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Box
-                            component="img"
-                            src={product.imageUrl}
-                            alt={product.name}
-                            sx={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 1, border: '1px solid #e0e0e0' }}
-                          />
-                        </Box>
-                      ) : (
-                        '-'
-                      )}
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => handleIncrementQuantity(product)}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="inherit"
-                        onClick={() => startEditProduct(product)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDeleteProduct(product)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )
-        </>
+          <ProductsTab
+            products={products}
+            loadingProducts={loadingProducts}
+            creatingProduct={creatingProduct}
+            editingProduct={editingProduct}
+            newProduct={newProduct}
+            editForm={editForm}
+            onNewProductChange={handleNewProductChange}
+            onCreateProduct={handleCreateProduct}
+            onIncrementQuantity={handleIncrementQuantity}
+            onDeleteProduct={handleDeleteProduct}
+            onStartEditProduct={startEditProduct}
+            onEditFormChange={handleEditFormChange}
+            onSaveEditProduct={handleSaveEditProduct}
+            onCancelEdit={() => setEditingProduct(null)}
+          />
         );
 
       case 'permissions':
         return (
-          <>
-            <Typography variant="h4" gutterBottom>
-              จัดการสิทธิ์ผู้ใช้
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-              เลือก role ให้กับผู้ใช้แต่ละคน (customer / staff / admin)
-            </Typography>
-
-            {loadingUsers ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <CircularProgress />
-              </Box>
-            ) : (
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Email</TableCell>
-                    <TableCell>UID</TableCell>
-                    <TableCell align="right">Role</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id} hover>
-                      <TableCell>{user.email || '-'}</TableCell>
-                      <TableCell>{user.uid || '-'}</TableCell>
-                      <TableCell align="right">
-                        <Select
-                          size="small"
-                          value={user.role || 'customer'}
-                          onChange={(e) =>
-                            handleRoleChange(user, e.target.value as UserRole)
-                          }
-                          disabled={savingId === user.id}
-                          sx={{ minWidth: 140 }}
-                        >
-                          <MenuItem value="customer">ลูกค้า (customer)</MenuItem>
-                          <MenuItem value="staff">พนักงาน (staff)</MenuItem>
-                          <MenuItem value="admin">แอดมิน (admin)</MenuItem>
-                        </Select>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </>
+          <PermissionsTab
+            users={users}
+            loadingUsers={loadingUsers}
+            savingId={savingId}
+            onRoleChange={handleRoleChange}
+          />
         );
 
       default:
-        return (
-          <>
-            <Typography variant="h4" gutterBottom>
-              แดชบอร์ดรวม (Admin)
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              ภาพรวมระบบ เช่น จำนวนผู้ใช้ สินค้า และออเดอร์ คุณสามารถเพิ่มกราฟ/สถิติต่าง ๆ ได้ภายหลัง
-            </Typography>
-          </>
-        );
+        return <OverviewTab />;
     }
   };
 
@@ -707,77 +518,6 @@ const AdminDashboard = () => {
         </Box>
       </Box>
 
-      {/* Edit product dialog */}
-      <Dialog open={!!editingProduct} onClose={() => setEditingProduct(null)} fullWidth maxWidth="sm">
-        <DialogTitle>แก้ไขสินค้า</DialogTitle>
-        <DialogContent sx={{ pt: 2, display: 'grid', gap: 2 }}>
-          <TextField
-            label="ชื่อสินค้า"
-            value={editForm.name}
-            onChange={(e) => handleEditFormChange('name', e.target.value)}
-            required
-          />
-          <TextField
-            label="คำอธิบายสินค้า"
-            value={editForm.description}
-            onChange={(e) => handleEditFormChange('description', e.target.value)}
-            multiline
-            minRows={2}
-          />
-          <TextField
-            label="ราคา"
-            type="number"
-            value={editForm.price}
-            onChange={(e) => handleEditFormChange('price', e.target.value)}
-            inputProps={{ min: 0, step: 0.01 }}
-          />
-          <TextField
-            label="จำนวน"
-            type="number"
-            value={editForm.quantity}
-            onChange={(e) => handleEditFormChange('quantity', e.target.value)}
-            inputProps={{ min: 0, step: 1 }}
-          />
-          <TextField
-            label="ลิ้งค์รูปภาพ (URL)"
-            value={editForm.imageUrl}
-            onChange={(e) => handleEditFormChange('imageUrl', e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditingProduct(null)}>ยกเลิก</Button>
-          <Button onClick={handleSaveEditProduct} variant="contained">
-            บันทึก
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Edit picking dialog */}
-      <Dialog open={!!editingPicking} onClose={() => setEditingPicking(null)} fullWidth maxWidth="sm">
-        <DialogTitle>จัดการขนส่ง</DialogTitle>
-        <DialogContent sx={{ pt: 2, display: 'grid', gap: 2 }}>
-          <TextField
-            label="เลขพัสดุ"
-            value={pickingForm.trackingNumber}
-            onChange={(e) => handlePickingFormChange('trackingNumber', e.target.value)}
-            placeholder="กรอกเลขพัสดุ"
-          />
-          <TextField
-            label="หมายเหตุการจัดส่ง"
-            value={pickingForm.shippingNotes}
-            onChange={(e) => handlePickingFormChange('shippingNotes', e.target.value)}
-            multiline
-            minRows={2}
-            placeholder="บันทึกเพิ่มเติมเกี่ยวกับการจัดส่ง"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditingPicking(null)}>ยกเลิก</Button>
-          <Button onClick={handleSavePicking} variant="contained">
-            บันทึก
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
 
   );
