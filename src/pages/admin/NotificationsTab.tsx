@@ -18,7 +18,7 @@ import { getAll } from '../../services/firestore';
 
 interface LowStockNotification {
   id: string;
-  type: 'สต็อกต่ำ';
+  type: 'สต็อกต่ำ' | 'สต็อกหมด';
   productName: string;
   notificationDate: Date;
   remainingStock: number;
@@ -50,23 +50,36 @@ const NotificationsTab: React.FC<NotificationsTabProps> = ({ onNavigateToProduct
       
       // เรียกใช้ฟังก์ชัน checkLowStock (จำลองการทำงาน)
       const allProducts = await getAll('products') as ProductRow[];
-      const lowStockItems = allProducts.filter(product => {
+      const notifications: LowStockNotification[] = [];
+      
+      allProducts.forEach(product => {
         const currentStock = product.quantity || 0;
         const minStockThreshold = Math.ceil(product.quantity * 0.2); // 20% ของจำนวนเดิม
-        return currentStock <= minStockThreshold && currentStock > 0; // ต่ำกว่า 20% แต่ยังไม่หมด
+        
+        if (currentStock === 0) {
+          // สินค้าหมด
+          notifications.push({
+            id: product.id,
+            type: 'สต็อกหมด',
+            productName: product.name,
+            notificationDate: new Date(),
+            remainingStock: 0,
+            productId: product.id,
+          });
+        } else if (currentStock <= minStockThreshold) {
+          // สินค้าต่ำกว่า 20% แต่ยังไม่หมด
+          notifications.push({
+            id: product.id,
+            type: 'สต็อกต่ำ',
+            productName: product.name,
+            notificationDate: new Date(),
+            remainingStock: currentStock,
+            productId: product.id,
+          });
+        }
       });
 
-      // แปลงข้อมูลเป็นรูปแบบ notifications
-      const notificationsData: LowStockNotification[] = lowStockItems.map(product => ({
-        id: product.id,
-        type: 'สต็อกต่ำ',
-        productName: product.name,
-        notificationDate: new Date(), // ใช้วันที่ปัจจุบัน
-        remainingStock: product.quantity || 0,
-        productId: product.id,
-      }));
-
-      setNotifications(notificationsData);
+      setNotifications(notifications);
     } catch (e) {
       console.error('Failed to load low stock notifications', e);
     } finally {

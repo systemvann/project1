@@ -558,16 +558,32 @@ const AdminDashboard = () => {
     }
   };
 
-  // ตรวจสอบสต็อกต่ำกว่า 20%
+  // ตรวจสอบสต็อกต่ำกว่า 20% และสินค้าหมด
   const checkLowStock = async () => {
     try {
       const allProducts = await getAll('products');
-      const lowStockItems = (allProducts as ProductRow[]).filter(product => {
+      const notifications: (ProductRow & { type: 'สต็อกต่ำ' | 'สต็อกหมด' })[] = [];
+      
+      (allProducts as ProductRow[]).forEach(product => {
         const currentStock = product.quantity || 0;
         const minStockThreshold = Math.ceil(product.quantity * 0.2); // 20% ของจำนวนเดิม
-        return currentStock <= minStockThreshold && currentStock > 0; // ต่ำกว่า 20% แต่ยังไม่หมด
+        
+        if (currentStock === 0) {
+          // สินค้าหมด
+          notifications.push({
+            ...product,
+            type: 'สต็อกหมด'
+          });
+        } else if (currentStock <= minStockThreshold) {
+          // สินค้าต่ำกว่า 20% แต่ยังไม่หมด
+          notifications.push({
+            ...product,
+            type: 'สต็อกต่ำ'
+          });
+        }
       });
-      return lowStockItems;
+      
+      return notifications;
     } catch (e) {
       console.error('Failed to check low stock', e);
       return [];
