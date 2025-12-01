@@ -64,17 +64,136 @@
   50% { transform: translateY(-3px); }
 }
 
+/* Enhanced animations for auth pages */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(30, 58, 138, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(30, 58, 138, 0.5);
+  }
+}
+
+@keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes backgroundShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 /* Apply animations to components */
 .fade-in-up {
-  animation: fadeInUp 0.6s ease;
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .slide-in-left {
-  animation: slideInLeft 0.5s ease;
+  animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .slide-in-down {
-  animation: slideInDown 0.5s ease;
+  animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-in-scale {
+  animation: slideInScale 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+.glow-animation {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Auth page specific animations */
+.auth-paper {
+  animation: slideInScale 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-paper:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 70px rgba(30, 58, 138, 0.25);
+}
+
+.auth-icon {
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+.auth-title {
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+}
+
+.auth-subtitle {
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s both;
+}
+
+.auth-form {
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.8s both;
+}
+
+/* Enhanced button animations */
+.auth-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.auth-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.auth-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Input field animations */
+.auth-input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-input:focus-within {
+  transform: translateY(-2px);
+}
+
+/* Background decoration animations */
+.bg-decoration-1 {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.bg-decoration-2 {
+  animation: float 8s ease-in-out infinite reverse;
+  animation-delay: 2s;
 }
 
 /* Smooth scrollbar */
@@ -91,10 +210,42 @@
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #1E3A8A, #3B82F6);
   border-radius: 10px;
+  transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #1E3A8A;
+  transform: scale(1.1);
+}
+
+/* Enhanced focus styles */
+.focus-ring:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Error and success states */
+.error-shake {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.success-bounce {
+  animation: bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 :root {
@@ -116,7 +267,9 @@ a {
   font-weight: 500;
   color: #3B82F6;
   text-decoration: inherit;
+  transition: color 0.3s ease;
 }
+
 a:hover {
   color: #1E3A8A;
 }
@@ -144,11 +297,13 @@ button {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 button:hover {
   background-color: #3B82F6;
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(30, 58, 138, 0.3);
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
