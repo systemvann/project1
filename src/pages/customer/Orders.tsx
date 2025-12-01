@@ -9,6 +9,7 @@ import {
   Card,
   CardMedia,
   CardContent,
+  Container,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -48,7 +49,13 @@ const Orders = () => {
       if (!currentUser) return;
       try {
         const ordersData = await queryDocs('orders', 'uid', '==', currentUser.uid);
-        setOrders(ordersData as Order[]);
+        // Sort orders by date (latest first)
+        const sortedOrders = (ordersData as Order[]).sort((a, b) => {
+          const dateA = a.createdAt?.toDate?.() || new Date(a.createdAt);
+          const dateB = b.createdAt?.toDate?.() || new Date(b.createdAt);
+          return dateB.getTime() - dateA.getTime();
+        });
+        setOrders(sortedOrders);
       } catch (e) {
         console.error('Failed to load orders', e);
       } finally {
@@ -61,32 +68,222 @@ const Orders = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
+      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3 } }}>
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #F1F5F9 100%)',
+            zIndex: -1,
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.4) 0%, transparent 50%)',
+              zIndex: -1
+            },
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 50%)',
+              zIndex: -1
+            }
+          }}
+        />
+        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <CircularProgress />
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <Box sx={{ p: 3, backgroundColor: '#f5f7fb', minHeight: '100vh' }}>
-      <Box sx={{ maxWidth: 900, mx: 'auto' }}>
-        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-          ประวัติคำสั่งซื้อสินค้า
-        </Typography>
+    <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3 } }}>
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #F1F5F9 100%)',
+          zIndex: -1,
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.4) 0%, transparent 50%)',
+            zIndex: -1
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 50%)',
+            zIndex: -1
+          }
+        }}
+      />
+      
+      <Paper
+        sx={{
+          p: 4,
+          maxWidth: 900,
+          mx: 'auto',
+          background: 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: 4,
+          border: '1px solid rgba(255,255,255,0.3)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+          transform: 'perspective(1000px) rotateX(0deg)',
+          '&:hover': {
+            transform: 'perspective(1000px) rotateX(-1deg) translateY(-4px)',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.15)'
+          }
+        }}
+        elevation={0}
+      >
+        <Box sx={{ mb: 4, textAlign: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mr: 2,
+                boxShadow: '0 4px 12px rgba(30, 58, 138, 0.3)'
+              }}
+            >
+              <Typography variant="h6" sx={{ color: 'white', fontWeight: 700 }}>
+                📋
+              </Typography>
+            </Box>
+            <Typography 
+              variant="h3" 
+              sx={{ 
+                fontWeight: 800,
+                background: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 50%, #60A5FA 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textShadow: '0 2px 4px rgba(30, 58, 138, 0.1)',
+                letterSpacing: 0.5
+              }}
+            >
+              ประวัติคำสั่งซื้อ
+            </Typography>
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                ml: 2,
+                boxShadow: '0 4px 12px rgba(96, 165, 250, 0.3)'
+              }}
+            >
+              <Typography variant="h6" sx={{ color: 'white', fontWeight: 700 }}>
+                🛒
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+            <Box 
+              sx={{ 
+                height: 2, 
+                width: 60, 
+                background: 'linear-gradient(90deg, transparent, #3B82F6)' 
+              }} 
+            />
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#64748B',
+                fontWeight: 500,
+                px: 2
+              }}
+            >
+              จัดการและติดตามคำสั่งซื้อของคุณ
+            </Typography>
+            <Box 
+              sx={{ 
+                height: 2, 
+                width: 60, 
+                background: 'linear-gradient(90deg, #3B82F6, transparent)' 
+              }} 
+            />
+          </Box>
+        </Box>
 
         {orders.length === 0 && (
-          <Paper sx={{ p: 4, textAlign: 'center' }} elevation={1}>
+          <Paper 
+            sx={{ 
+              p: 6, 
+              textAlign: 'center',
+              background: 'rgba(255,255,255,0.7)',
+              backdropFilter: 'blur(5px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.05)'
+            }} 
+            elevation={0}
+          >
             <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
               ยังไม่มีประวัติคำสั่งซื้อ
             </Typography>
-            <Button variant="contained" onClick={() => navigate('/')}>
+            <Button 
+              variant="contained" 
+              onClick={() => navigate('/')}
+              sx={{
+                px: 4,
+                py: 1.5,
+                fontWeight: 600,
+                background: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1E40AF 0%, #2563EB 100%)'
+                }
+              }}
+            >
               เลือกสินค้าเพิ่ม
             </Button>
           </Paper>
         )}
 
         {orders.map((order) => (
-          <Paper key={order.id} sx={{ p: 3, mb: 3 }} elevation={1}>
+          <Paper 
+            key={order.id} 
+            sx={{ 
+              p: 3, 
+              mb: 3,
+              background: 'rgba(255,255,255,0.7)',
+              backdropFilter: 'blur(5px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.05)'
+            }} 
+            elevation={0}
+          >
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
@@ -101,7 +298,7 @@ const Orders = () => {
 
             {/* Status & Tracking */}
             <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
-              <Box sx={{ px: 2, py: 1, backgroundColor: '#e3f2fd', borderRadius: 1 }}>
+              <Box sx={{ px: 2, py: 1, backgroundColor: 'rgba(227, 242, 253, 0.8)', borderRadius: 1 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
                   สถานะ
                 </Typography>
@@ -110,7 +307,7 @@ const Orders = () => {
                 </Typography>
               </Box>
               {order.trackingNumber && (
-                <Box sx={{ px: 2, py: 1, backgroundColor: '#f3e5f5', borderRadius: 1 }}>
+                <Box sx={{ px: 2, py: 1, backgroundColor: 'rgba(243, 229, 245, 0.8)', borderRadius: 1 }}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     เลขพัสดุ
                   </Typography>
@@ -120,7 +317,7 @@ const Orders = () => {
                 </Box>
               )}
               {order.shippingMethod && (
-                <Box sx={{ px: 2, py: 1, backgroundColor: '#e8f5e8', borderRadius: 1 }}>
+                <Box sx={{ px: 2, py: 1, backgroundColor: 'rgba(232, 245, 232, 0.8)', borderRadius: 1 }}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     ขนส่ง
                   </Typography>
@@ -130,7 +327,7 @@ const Orders = () => {
                 </Box>
               )}
               {!order.shippingMethod && (
-                <Box sx={{ px: 2, py: 1, backgroundColor: '#fff3e0', borderRadius: 1 }}>
+                <Box sx={{ px: 2, py: 1, backgroundColor: 'rgba(255, 243, 224, 0.8)', borderRadius: 1 }}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     ขนส่ง
                   </Typography>
@@ -140,7 +337,7 @@ const Orders = () => {
                 </Box>
               )}
               {!order.trackingNumber && (
-                <Box sx={{ px: 2, py: 1, backgroundColor: '#fff3e0', borderRadius: 1 }}>
+                <Box sx={{ px: 2, py: 1, backgroundColor: 'rgba(255, 243, 224, 0.8)', borderRadius: 1 }}>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
                     เลขพัสดุ
                   </Typography>
@@ -154,7 +351,19 @@ const Orders = () => {
             {/* Product list with images */}
             <Box sx={{ mb: 2 }}>
               {order.items.map((item) => (
-                <Card key={item.id} sx={{ display: 'flex', mb: 2, p: 1 }} elevation={0}>
+                <Card 
+                  key={item.id} 
+                  sx={{ 
+                    display: 'flex', 
+                    mb: 2, 
+                    p: 1,
+                    background: 'rgba(255,255,255,0.5)',
+                    backdropFilter: 'blur(3px)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
+                  }} 
+                  elevation={0}
+                >
                   {item.imageUrl && (
                     <CardMedia
                       component="img"
@@ -209,12 +418,25 @@ const Orders = () => {
         ))}
 
         <Box sx={{ mt: 3, textAlign: 'center' }}>
-          <Button variant="outlined" onClick={() => navigate('/')}>
+          <Button 
+            variant="outlined" 
+            onClick={() => navigate('/')}
+            sx={{
+              px: 4,
+              py: 1.5,
+              borderColor: '#1E3A8A',
+              color: '#1E3A8A',
+              '&:hover': {
+                borderColor: '#1E40AF',
+                background: 'rgba(30, 58, 138, 0.04)'
+              }
+            }}
+          >
             เลือกสินค้าเพิ่ม
           </Button>
         </Box>
-      </Box>
-    </Box>
+      </Paper>
+    </Container>
   );
 };
 

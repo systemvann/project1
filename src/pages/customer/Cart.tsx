@@ -6,6 +6,7 @@ import {
   TextField,
   Button,
   Divider,
+  Container,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -115,56 +116,154 @@ const Cart = () => {
 
   if (step === 'success') {
     return (
-      <Box sx={{ p: 3, backgroundColor: '#f5f7fb', minHeight: '100vh' }}>
-        <Box sx={{ maxWidth: 600, mx: 'auto', textAlign: 'center', mt: 8 }}>
-          <Typography variant="h4" sx={{ mb: 2, fontWeight: 600, color: '#4caf50' }}>
-            สั่งซื้อสำเร็จ
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-            ขอบคุณที่สั่งซื้อสินค้ากับเรา เราได้รับคำสั่งซื้อของคุณแล้ว
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Button variant="outlined" onClick={() => navigate('/orders')}>
-              ดูคำสั่งซื้อของฉัน
-            </Button>
-            <Button variant="contained" onClick={() => navigate('/')}>
-              เลือกสินค้าเพิ่ม
-            </Button>
-          </Box>
+      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3 } }}>
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #F1F5F9 100%)',
+            zIndex: -1,
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.4) 0%, transparent 50%)',
+              zIndex: -1
+            },
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 50%)',
+              zIndex: -1
+            }
+          }}
+        />
+        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Paper
+            sx={{
+              p: 6,
+              maxWidth: 600,
+              mx: 'auto',
+              textAlign: 'center',
+              background: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: 4,
+              border: '1px solid rgba(255,255,255,0.3)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+              transform: 'perspective(1000px) rotateX(0deg)',
+              '&:hover': {
+                transform: 'perspective(1000px) rotateX(-1deg) translateY(-4px)',
+                boxShadow: '0 12px 40px rgba(0,0,0,0.15)'
+              }
+            }}
+          >
+            <Typography variant="h4" sx={{ mb: 2, fontWeight: 700, color: '#4caf50' }}>
+              สั่งซื้อสำเร็จ
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+              ขอบคุณที่สั่งซื้อสินค้ากับเรา เราได้รับคำสั่งซื้อของคุณแล้ว
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Button variant="outlined" onClick={() => navigate('/orders')}>
+                ดูคำสั่งซื้อของฉัน
+              </Button>
+              <Button variant="contained" onClick={() => navigate('/')}>
+                เลือกสินค้าเพิ่ม
+              </Button>
+            </Box>
+          </Paper>
         </Box>
-      </Box>
+      </Container>
     );
   }
 
   return (
-    <Box sx={{ p: 3, backgroundColor: '#f5f7fb', minHeight: '100vh' }}>
-      {/* Steps */}
-      <Box sx={{ maxWidth: 900, mx: 'auto', mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="body2" color="primary">
-            1 ตะกร้า
-          </Typography>
-          <Typography variant="body2" color="primary" sx={{ fontWeight: 600 }}>
-            2 ชำระเงิน
-          </Typography>
-          <Typography variant="body2" color="text.disabled">
-            3 เสร็จสิ้น
-          </Typography>
+    <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, sm: 3 } }}>
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 50%, #F1F5F9 100%)',
+          zIndex: -1,
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.4) 0%, transparent 50%)',
+            zIndex: -1
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.3) 0%, transparent 50%)',
+            zIndex: -1
+          }
+        }}
+      />
+      
+      <Paper
+        sx={{
+          p: 4,
+          maxWidth: 900,
+          mx: 'auto',
+          background: 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: 4,
+          border: '1px solid rgba(255,255,255,0.3)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+          transform: 'perspective(1000px) rotateX(0deg)',
+          '&:hover': {
+            transform: 'perspective(1000px) rotateX(-1deg) translateY(-4px)',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.15)'
+          }
+        }}
+      >
+        {/* Steps */}
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+            <Typography variant="body2" color="primary">
+              1 ตะกร้า
+            </Typography>
+            <Typography variant="body2" color="primary" sx={{ fontWeight: 600 }}>
+              2 ชำระเงิน
+            </Typography>
+            <Typography variant="body2" color="text.disabled">
+              3 เสร็จสิ้น
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              height: 4,
+              borderRadius: 999,
+              backgroundColor: '#e0e7ff',
+              overflow: 'hidden',
+            }}
+          >
+            <Box sx={{ width: '66%', height: '100%', backgroundColor: '#4caf50' }} />
+          </Box>
         </Box>
-        <Box
-          sx={{
-            height: 4,
-            borderRadius: 999,
-            backgroundColor: '#e0e7ff',
-            overflow: 'hidden',
-          }}
-        >
-          <Box sx={{ width: '66%', height: '100%', backgroundColor: '#4caf50' }} />
-        </Box>
-      </Box>
 
-      <Box sx={{ maxWidth: 900, mx: 'auto' }}>
-        <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
+        <Typography variant="h5" sx={{ mb: 3, fontWeight: 700, textAlign: 'center' }}>
           ชำระเงิน
         </Typography>
 
@@ -176,7 +275,16 @@ const Cart = () => {
           }}
         >
           {/* Shipping form */}
-          <Paper sx={{ p: 3 }} elevation={1}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              background: 'rgba(255,255,255,0.7)',
+              backdropFilter: 'blur(5px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.05)'
+            }} 
+            elevation={0}
+          >
             <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
               ที่อยู่จัดส่ง
             </Typography>
@@ -194,6 +302,17 @@ const Cart = () => {
                 onChange={(e) => handleChange('fullName', e.target.value)}
                 fullWidth
                 required
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover fieldset': {
+                      borderColor: '#3B82F6'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1E3A8A'
+                    }
+                  }
+                }}
               />
               <TextField
                 label="เบอร์โทร"
@@ -201,6 +320,17 @@ const Cart = () => {
                 onChange={(e) => handleChange('phone', e.target.value)}
                 fullWidth
                 required
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover fieldset': {
+                      borderColor: '#3B82F6'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1E3A8A'
+                    }
+                  }
+                }}
               />
               <TextField
                 label="ที่อยู่"
@@ -208,12 +338,34 @@ const Cart = () => {
                 onChange={(e) => handleChange('address', e.target.value)}
                 fullWidth
                 required
+                multiline
+                rows={3}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover fieldset': {
+                      borderColor: '#3B82F6'
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1E3A8A'
+                    }
+                  }
+                }}
               />
             </Box>
           </Paper>
 
           {/* Order summary */}
-          <Paper sx={{ p: 3 }} elevation={1}>
+          <Paper 
+            sx={{ 
+              p: 3, 
+              background: 'rgba(255,255,255,0.7)',
+              backdropFilter: 'blur(5px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.05)'
+            }} 
+            elevation={0}
+          >
             <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
               สรุปรายการ
             </Typography>
@@ -274,13 +426,23 @@ const Cart = () => {
               variant="contained"
               disabled={saving || items.length === 0}
               onClick={handleConfirmOrder}
+              sx={{
+                py: 1.5,
+                fontWeight: 600,
+
+                background: 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #1E40AF 0%, #2563EB 100%)'
+
+                }
+              }}
             >
               {saving ? 'กำลังยืนยันคำสั่งซื้อ...' : 'ยืนยันคำสั่งซื้อ'}
             </Button>
           </Paper>
         </Box>
-      </Box>
-    </Box>
+      </Paper>
+    </Container>
   );
 };
 

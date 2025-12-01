@@ -11,6 +11,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import StaffDashboard from './pages/staff/StaffDashboard';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import Layout from './components/Layout';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ReactElement } from 'react';
 
@@ -146,50 +147,52 @@ function App() {
       <CssBaseline />
       <AuthProvider>
         <Router>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route
-              path="/"
-              element={(
-                <ProtectedRoute>
-                  <RoleBasedDashboard />
-                </ProtectedRoute>
-              )}
-            />
-            <Route
-              path="/profile"
-              element={(
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              )}
-            />
-            <Route
-              path="/cart"
-              element={(
-                <ProtectedRoute>
-                  <Cart />
-                </ProtectedRoute>
-              )}
-            />
-            <Route
-              path="/orders"
-              element={(
-                <ProtectedRoute>
-                  <Orders />
-                </ProtectedRoute>
-              )}
-            />
-            <Route
-              path="/staff/pick/:orderId"
-              element={(
-                <ProtectedRoute>
-                  <PickingConfirm />
-                </ProtectedRoute>
-              )}
-            />
-          </Routes>
+          <Layout>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="/"
+                element={(
+                  <ProtectedRoute>
+                    <RoleBasedDashboard />
+                  </ProtectedRoute>
+                )}
+              />
+              <Route
+                path="/profile"
+                element={(
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                )}
+              />
+              <Route
+                path="/cart"
+                element={(
+                  <ProtectedRoute>
+                    <Cart />
+                  </ProtectedRoute>
+                )}
+              />
+              <Route
+                path="/orders"
+                element={(
+                  <ProtectedRoute>
+                    <Orders />
+                  </ProtectedRoute>
+                )}
+              />
+              <Route
+                path="/staff/pick/:orderId"
+                element={(
+                  <ProtectedRoute>
+                    <PickingConfirm />
+                  </ProtectedRoute>
+                )}
+              />
+            </Routes>
+          </Layout>
         </Router>
       </AuthProvider>
     </ThemeProvider>
