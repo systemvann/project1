@@ -12,7 +12,8 @@ import {
   Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { getAll } from '../../services/firestore';
+import { getAll, update } from '../../services/firestore';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface OrderItem {
   id: string;
@@ -33,19 +34,27 @@ interface Order {
   address: string;
   status?: string;
   trackingNumber?: string;
+  assignedTo?: string;
+  assignedAt?: any;
 }
 
 const OrdersTab = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleAssignOrder = async (orderId: string) => {
+    // ไปที่หน้าเบิกสินค้าโดยตรง (ไม่ต้องมอบหมายล่วงหน้า)
+    navigate(`/staff/pick/${orderId}`, { state: { fromStaff: true } });
+  };
 
   useEffect(() => {
     const loadOrders = async () => {
       try {
         // โหลดทุกออเดอร์จาก Firestore
         const allOrders = await getAll('orders');
-        // แสดงเฉพาะที่ยังไม่ได้เบิก (status = 'รอดำเนินการ')
+        // แสดงเฉพาะที่ยังไม่ได้เบิก
         const pendingOrders = (allOrders as Order[]).filter(
           (o) => o.status === 'รอดำเนินการ'
         );
@@ -58,6 +67,13 @@ const OrdersTab = () => {
     };
 
     loadOrders();
+
+    // เพิ่มการรีเฟรชทุก 30 วินาทีเพื่ออัปเดตออเดอร์ล่าสุด
+    const intervalId = setInterval(() => {
+      loadOrders();
+    }, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) {
@@ -74,7 +90,7 @@ const OrdersTab = () => {
         จัดการคำสั่งซื้อ
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-        รายการคำสั่งซื้อที่รอการเบิกสินค้า (status = 'รอดำเนินการ')
+        รายการคำสั่งซื้อที่รอการเบิกสินค้า
       </Typography>
       {orders.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
@@ -117,8 +133,12 @@ const OrdersTab = () => {
                     })}
                   </TableCell>
                   <TableCell>
-                    <Button variant="outlined" size="small" onClick={() => navigate(`/staff/pick/${order.id}`, { state: { fromStaff: true } })}>
-                      เบิกสินค้า
+                    <Button 
+                      variant="contained" 
+                      size="small" 
+                      onClick={() => handleAssignOrder(order.id)}
+                    >
+                      รับออเดอร์
                     </Button>
                   </TableCell>
                 </TableRow>

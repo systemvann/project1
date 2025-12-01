@@ -34,6 +34,8 @@ interface Order {
   address: string;
   status?: string;
   trackingNumber?: string;
+  assignedTo?: string;
+  assignedAt?: any;
 }
 
 const PickingConfirm = () => {
@@ -76,7 +78,23 @@ const PickingConfirm = () => {
     if (!order || !currentUser) return;
     setConfirming(true);
     try {
-      // บันทึกประวัติการเบิกสินค้า
+      // ตรวจสอบว่ามีคนอื่นเบิกออเดอร์นี้ไปหรือยัง (race condition protection)
+      const allOrders = await getAll('orders');
+      const currentOrder = (allOrders as Order[]).find((o) => o.id === order.id);
+      
+      if (currentOrder && currentOrder.status !== 'รอดำเนินการ') {
+        alert('ออเดอร์นี้ถูกเบิกไปแล้ว โดยพนักงานคนอื่น');
+        handleBackToOrders();
+        return;
+      }
+
+      // มอบหมายและบันทึกประวัติการเบิกสินค้าในครั้งเดียว
+      await update('orders', order.id, {
+        status: 'กำลังเตรียมสินค้า',
+        assignedTo: currentUser.uid,
+        assignedAt: new Date()
+      });
+
       await add('picking', {
         orderId: order.id,
         staffId: currentUser.uid,
@@ -94,11 +112,6 @@ const PickingConfirm = () => {
         shippingNotes: '',
       });
 
-      // อัปเดตสถานะออเดอร์เป็น 'กำลังเตรียมสินค้า'
-      await update('orders', order.id, {
-        status: 'กำลังเตรียมสินค้า',
-      });
-
       handleBackToOrders();
     } catch (e) {
       console.error('Failed to confirm pick', e);
@@ -107,12 +120,25 @@ const PickingConfirm = () => {
     }
   };
 
+  const handleCancelPick = async () => {
+    // กลับไปหน้าออเดอร์โดยตรง (ไม่ต้องยกเลิกอะไร)
+    handleBackToOrders();
+  };
+
   useEffect(() => {
     const loadOrder = async () => {
       if (!orderId) return;
       try {
         const allOrders = await getAll('orders');
         const found = (allOrders as Order[]).find((o) => o.id === orderId);
+        
+        // ตรวจสอบว่าออเดอร์นี้ถูกเบิกไปหรือยัง
+        if (found && found.status !== 'รอดำเนินการ') {
+          alert('ออเดอร์นี้ถูกเบิกไปแล้ว');
+          handleBackToOrders();
+          return;
+        }
+        
         setOrder(found || null);
       } catch (e) {
         console.error('Failed to load order', e);
@@ -217,7 +243,7 @@ const PickingConfirm = () => {
 
         {/* Actions */}
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-          <Button variant="outlined" onClick={handleBackToOrders}>
+          <Button variant="outlined" onClick={handleCancelPick}>
             ยกเลิก
           </Button>
           <Button 

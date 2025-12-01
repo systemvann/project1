@@ -13,7 +13,7 @@ import {
   Paper,
 } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
-import { queryDocs } from '../../services/firestore';
+import { queryDocs, getAll } from '../../services/firestore';
 
 interface OrderItem {
   id: string;
@@ -54,6 +54,34 @@ const PickingHistory = () => {
         // ดึงประวัติการเบิกของ staff คนนั้นๆ
         const myPicking = await queryDocs('picking', 'staffId', '==', currentUser.uid);
         setPickingHistory(myPicking as PickingRecord[]);
+        
+        // ดึงออเดอร์ที่ถูกมอบหมายให้ตัวเองแต่ยังไม่ได้เบิก
+        const allOrders = await getAll('orders');
+        const assignedOrders = (allOrders as any[]).filter(
+          (order) => order.assignedTo === currentUser.uid && order.status === 'รอดำเนินการ'
+        );
+        
+        // แปลงออเดอร์ที่มอบหมายให้เป็นรูปแบบ picking record
+        const assignedRecords = assignedOrders.map(order => ({
+          id: order.id,
+          orderId: order.id,
+          staffId: currentUser.uid,
+          staffName: currentUser.email || 'พนักงาน',
+          items: order.items,
+          total: order.total,
+          customerInfo: {
+            fullName: order.fullName,
+            phone: order.phone,
+            address: order.address,
+          },
+          pickedAt: order.assignedAt,
+          status: 'มอบหมายแล้ว',
+          trackingNumber: '',
+          shippingNotes: '',
+        }));
+        
+        // รวมประวัติเดิมกับออเดอร์ที่มอบหมายใหม่
+        setPickingHistory([...assignedRecords, ...myPicking as PickingRecord[]]);
       } catch (e) {
         console.error('Failed to load picking history', e);
       } finally {
@@ -78,13 +106,13 @@ const PickingHistory = () => {
         ประวัติการเบิกสินค้า
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-        รายการการเบิกสินค้าที่คุณได้ดำเนินการ
+        รายการการเบิกสินค้าและออเดอร์ที่คุณได้รับมอบหมาย
       </Typography>
       
       {pickingHistory.length === 0 ? (
         <Paper sx={{ p: 3, textAlign: 'center' }}>
           <Typography variant="body2" color="text.secondary">
-            ยังไม่มีประวัติการเบิกสินค้า
+            ยังไม่มีประวัติการเบิกสินค้าหรือออเดอร์ที่ได้รับมอบหมาย
           </Typography>
         </Paper>
       ) : (
@@ -141,6 +169,8 @@ const PickingHistory = () => {
                           ? 'success'
                           : record.status === 'แจ้งเบิก'
                           ? 'warning'
+                          : record.status === 'มอบหมายแล้ว'
+                          ? 'info'
                           : 'default'
                       }
                       size="small"
